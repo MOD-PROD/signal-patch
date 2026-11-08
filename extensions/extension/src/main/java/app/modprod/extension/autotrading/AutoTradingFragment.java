@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 /**
- * 5th tab content: local Auto Trading UI (no OKX keys, simulation only).
+ * 5th tab: local Auto Trading UI (simulation only, no OKX API keys).
  */
 public class AutoTradingFragment extends Fragment {
 

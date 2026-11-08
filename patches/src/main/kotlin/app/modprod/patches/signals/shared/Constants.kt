@@ -10,7 +10,7 @@ object Constants {
 
     /**
      * Signals / Crypto Trading App (Zyncas).
-     * Version 14.3.1 (154) verified against Apktool M decompile.
+     * Verified against Apktool M decompile of v14.3.1 (154).
      */
     val COMPATIBILITY_SIGNALS = Compatibility(
         name = "Signals",

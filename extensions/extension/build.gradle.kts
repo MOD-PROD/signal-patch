@@ -1,13 +1,14 @@
-plugins {
-    id("com.android.library")
+extension {
+    // Path of the compiled extension inside the .mpp. Patches load it with extendWith(...).
+    name = "extensions/extension.mpe"
 }
 
 android {
     namespace = "app.modprod.extension"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
-        minSdk = 26
+        minSdk = 21
     }
 
     compileOptions {
@@ -18,4 +19,6 @@ android {
 
 dependencies {
     compileOnly(libs.annotation)
+    // Host app provides the real Fragment at runtime; compileOnly for .mpe build only.
+    compileOnly("androidx.fragment:fragment:1.8.5")
 }

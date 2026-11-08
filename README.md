@@ -1,49 +1,59 @@
 # signal-patch
 
-Patches **Morphe** pour l'application **Signals** (`com.zyncas.signals`).
+Patches **Morphe** pour **Signals** (`com.zyncas.signals`), calqués sur le modèle [Morphe-Patches-by-Modprod](https://github.com/MOD-PROD/Morphe-Patches-by-Modprod).
 
 ## Objectif
-
-Remplacer le 5e onglet masqué (Launchpad) par **Auto Trading** (WebView locale ModProd).
 
 ```
 Home | Trackers | Spot | Futures | Auto Trading
 ```
 
+Le 5e onglet (Launchpad masqué) affiche une WebView locale ModProd (prototype OKX, sans clés API).
+
 ## Compatibilité
 
-| App | Package | Version testée |
-|-----|---------|----------------|
-| Signals / Crypto Trading App | `com.zyncas.signals` | 14.3.1 (154) |
+| App | Package | Version |
+|-----|---------|---------|
+| Signals / Crypto Trading App | `com.zyncas.signals` | 14.3.1 |
 
 ## Patches
 
-| Patch | Type | Description |
-|-------|------|-------------|
-| **Enable Auto Trading tab** | resource | Rend visible le 5e item du menu, titre « Auto Trading », HTML asset |
-| **Wire Auto Trading fragment** | bytecode + extension | Remplace `LaunchPadFragment` (`Lak/c`) par `AutoTradingFragment` dans le ViewPager |
+| Nom | Type | Rôle |
+|-----|------|------|
+| Enable Auto Trading tab | resource | Menu visible + titre + HTML asset |
+| Wire Auto Trading fragment | bytecode + extension | Remplace `Lak/c` (LaunchPad) dans le ViewPager |
 
-## Utilisation (Morphe Manager)
-
-1. Compiler ce dépôt → artefact `.mpp`
-2. Ajouter le fichier patches dans Morphe Manager
-3. Sélectionner l'APK Signals **original qui fonctionne**
-4. Activer les deux patches
-5. Patcher + installer
-
-> Ne pas partir d'un APK déjà cassé par un rebuild apktool complet.
-
-## Build
+## Build (comme le template ModProd)
 
 ```bash
+# Token GitHub Packages (read:packages) si besoin :
+# ~/.gradle/gradle.properties
+# gpr.user=TON_USER
+# gpr.key=ghp_xxx
+
 ./gradlew :patches:build
-# ou
-./gradlew :patches:publishToMavenLocal
+./gradlew :patches:generatePatchesList
 ```
 
-Prérequis : accès Maven Morphe (`GITHUB_TOKEN` avec `read:packages` si besoin).
+Artefact : `patches/build/libs/*.mpp` → à charger dans **Morphe Manager**.
 
-## Sécurité
+## Utilisation
 
-- Prototype UI uniquement (pas d'ordres OKX)
-- Aucune clé API dans le HTML ni l'extension
+1. APK Signals **qui démarre déjà** (pas un rebuild apktool cassé)
+2. Morphe Manager → importer le `.mpp`
+3. Activer les deux patches
+4. Patcher → installer
+
+## Structure (miroir du template)
+
+```
+settings.gradle.kts
+patches/
+  build.gradle.kts
+  src/main/kotlin/app/modprod/patches/signals/...
+  src/main/kotlin/util/PatchListGenerator.kt
+  src/main/resources/signals/autotrading/index.html
+extensions/extension/
+  AutoTradingFragment.java
+gradle/
+```

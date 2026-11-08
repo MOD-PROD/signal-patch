@@ -5,6 +5,9 @@ pluginManagement {
         mavenLocal()
         gradlePluginPortal()
         google()
+        // Morphe artifacts on GitHub Packages.
+        // ~/.gradle/gradle.properties : gpr.user + gpr.key (read:packages)
+        // or GITHUB_ACTOR / GITHUB_TOKEN
         maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/MorpheApp/registry")
