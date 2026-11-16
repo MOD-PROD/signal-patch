@@ -56,7 +56,15 @@ jobs:
       - name: Locate MPP
         id: mpp
         run: |
-          MPP=$(find patches/build -type f -name '*.mpp' | head -n1)
+          mapfile -t bundles < <(find patches/build/libs -type f -name '*.mpp' ! -name '*-sources.mpp' ! -name '*-javadoc.mpp' | sort)
+          if [ "${#bundles[@]}" -ne 1 ]; then
+            printf 'Expected exactly one compiled MPP; found: %s\n' "${bundles[*]}"
+            exit 1
+          fi
+          mkdir -p dist
+          MPP=dist/patches-1.0.0.mpp
+          cp "${bundles[0]}" "$MPP"
+          unzip -p "$MPP" META-INF/MANIFEST.MF
           echo "path=$MPP" >> "$GITHUB_OUTPUT"
           echo "Found: $MPP"
           test -n "$MPP"
@@ -66,6 +74,18 @@ jobs:
           name: signals-auto-trading-mpp
           path: ${{ steps.mpp.outputs.path }}
           if-no-files-found: error
+
+      - name: Remove invalid release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view continuous >/dev/null 2>&1; then
+            for asset in patches-sources.mpp patches-1.0.0-javadoc.mpp; do
+              if gh release view continuous --json assets --jq '.assets[].name' | grep -Fxq "$asset"; then
+                gh release delete-asset continuous "$asset" --yes
+              fi
+            done
+          fi
 
       - name: Create / update continuous release
         uses: softprops/action-gh-release@v2
@@ -80,3 +100,11 @@ jobs:
           files: ${{ steps.mpp.outputs.path }}
           make_latest: true
           fail_on_unmatched_files: true
+
+      - name: Update bundle metadata
+        run: |
+          python -c 'import json,datetime; p="patches-bundle.json"; d=json.load(open(p)); d.update(version="1.0.0", download_url="https://github.com/MOD-PROD/signal-patch/releases/download/continuous/patches-1.0.0.mpp", created_at=datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")); open(p,"w").write(json.dumps(d,indent=2)+"\n")'
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add patches-bundle.json
+          git diff --cached --quiet || (git commit -m "chore: update compiled bundle metadata" && git push origin HEAD:main)
