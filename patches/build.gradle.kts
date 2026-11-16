@@ -1,4 +1,5 @@
 group = "app.modprod"
+version = "1.0.0"
 
 patches {
     about {
