@@ -13,7 +13,7 @@ on:
       - '.github/workflows/build-mpp.yml'
 
 permissions:
-  contents: read
+  contents: write
   packages: read
 
 jobs:
@@ -21,23 +21,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
+
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
+
       - name: Build MPP
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gradle --no-daemon :patches:build :patches:generatePatchesList
-      - name: Verify MPP output
+
+      - name: Locate MPP
+        id: mpp
         run: |
-          find patches/build -type f -name '*.mpp' -print
-          test -n "$(find patches/build -type f -name '*.mpp' -print -quit)"
+          MPP=$(find patches/build -type f -name '*.mpp' | head -n1)
+          echo "path=$MPP" >> "$GITHUB_OUTPUT"
+          echo "Found: $MPP"
+          test -n "$MPP"
+
       - uses: actions/upload-artifact@v4
         with:
           name: signals-auto-trading-mpp
-          path: patches/build/**/*.mpp
+          path: ${{ steps.mpp.outputs.path }}
           if-no-files-found: error
+
+      - name: Create / update continuous release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: continuous
+          name: continuous
+          body: |
+            Automatic build of Signals Auto Trading patches.
+
+            Add this source in Morphe Manager:
+            https://morphe.software/add-source?github=MOD-PROD/signal-patch
+          files: ${{ steps.mpp.outputs.path }}
+          make_latest: true
+          fail_on_unmatched_files: true
