@@ -48,7 +48,8 @@ fun main() {
             "name" to patch.name,
             "description" to patch.description,
             "default" to patch.default,
-            "compatiblePackages" to patch.compatiblePackages?.map { it.name },
+            // Morphe API: compatiblePackages was renamed to compatibility
+            "compatiblePackages" to patch.compatibility?.map { it.packageName ?: it.name },
         )
     }
 
