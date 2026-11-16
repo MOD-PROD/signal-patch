@@ -31,10 +31,26 @@ jobs:
         with:
           gradle-version: '8.9'
 
+      - name: Configure GitHub Packages credentials
+        env:
+          GPR_KEY: ${{ secrets.GPR_KEY }}
+        run: |
+          if [ -z "$GPR_KEY" ]; then
+            echo "ERROR: secret GPR_KEY is empty or missing"
+            echo "Create a classic PAT with read:packages and add it as repo secret GPR_KEY"
+            exit 1
+          fi
+          mkdir -p ~/.gradle
+          {
+            echo "gpr.user=${{ github.actor }}"
+            echo "gpr.key=$GPR_KEY"
+          } >> ~/.gradle/gradle.properties
+          echo "Credentials written for user=${{ github.actor }} (token length=${#GPR_KEY})"
+
       - name: Build MPP
         env:
           GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_TOKEN: ${{ secrets.GPR_KEY || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GPR_KEY }}
         run: gradle --no-daemon :patches:build :patches:generatePatchesList
 
       - name: Locate MPP
