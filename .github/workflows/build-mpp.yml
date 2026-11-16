@@ -33,7 +33,8 @@ jobs:
 
       - name: Build MPP
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GPR_KEY || secrets.GITHUB_TOKEN }}
         run: gradle --no-daemon :patches:build :patches:generatePatchesList
 
       - name: Locate MPP
