@@ -2,6 +2,12 @@
 
 Patches **Morphe** pour **Signals** (`com.zyncas.signals`), calqués sur le modèle [Morphe-Patches-by-Modprod](https://github.com/MOD-PROD/Morphe-Patches-by-Modprod).
 
+## Ajouter dans Morphe Manager
+
+👉 **https://morphe.software/add-source?github=MOD-PROD/signal-patch**
+
+(Ouvre ce lien sur le téléphone où Morphe Manager est installé.)
+
 ## Objectif
 
 ```
@@ -37,10 +43,12 @@ Le 5e onglet (Launchpad masqué) affiche une WebView locale ModProd (prototype O
 
 Artefact : `patches/build/libs/*.mpp` → à charger dans **Morphe Manager**.
 
+Les pushes sur `main` publient aussi automatiquement une release **continuous** avec le `.mpp`.
+
 ## Utilisation
 
 1. APK Signals **qui démarre déjà** (pas un rebuild apktool cassé)
-2. Morphe Manager → importer le `.mpp`
+2. Morphe Manager → source ci-dessus (ou importer le `.mpp` local)
 3. Activer les deux patches
 4. Patcher → installer
 
